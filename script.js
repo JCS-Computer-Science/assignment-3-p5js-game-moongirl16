@@ -32,7 +32,9 @@ let shooter =
     x: 200,
     y: 350,
     size: 50,
-    
+    r: 255,
+    g: 0,
+    b: 0
 }
 
 
@@ -57,14 +59,18 @@ function setup() {
 
 function draw() {
     background(100);
+    fill(shooter.r, shooter.g, shooter.b);
     circle(shooter.x, shooter.y, shooter.size);
+    
     updateShooter(shooter);
     
     if (frameCount % 240 === 0) { 
         randomBalls(points);
     }
     for (let i = 0; i<points.length; i++) { 
-        circle(points[i].x, points[i].y, points[i].size);    
+        fill(points[i].r, points[i].g, points[i].b); 
+        circle(points[i].x, points[i].y, points[i].size); 
+          
     //console.log(circles[i].x); This causes lag! 
     }
     
