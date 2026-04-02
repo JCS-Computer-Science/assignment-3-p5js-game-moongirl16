@@ -1,64 +1,115 @@
-//Ok so heres the plan: i wan to make a game where you have to shoot random balls that are a certain colour using a shooter, and if you shoot the wrong colour the game ends
-//Current problem to solve: how am i going to get random balls to appear on the screen, for an appropiate amount of time for a player to shoot it and then make it disappear when its hit?
-//Next: figure out how to make a launcher that 
-//and i need to print text to the console to tell the player what to shoot (this also involves the randomization of the colours)
+
 
 let points = [
 {
     x:200,
     y:200,
     size:50,
-    velX:3,
-    velY:4,
     r: 100,
     g: 200,
-    b: 250
+    b: 250,
+    value: 10
 
 },
 {
     x:75,
     y:75,
     size:20,
-    velX:2,
-    velY:1,
     r: 3,
     g: 150,
-    b: 5
+    b: 5,
+    value: 2
+},
+{
+    x:300,
+    y:300,
+    size:100,  
+    
+    r: 255,
+    g: 255,
+    b: 0,
+    value: 200
 }
 ]
-
+let enemies = [
+    {
+    x: 100,
+    y: 100,
+    size: 50,       
+    
+    }
+]
 let shooter = 
     {
-    x: 200,
-    y: 350,
+    x: 900,
+    y: 800,
     size: 50,
     r: 255,
     g: 0,
     b: 0
 }
-
-
-/*let x = 200;
-let y = 200*/
+let bullets = [
+    {
+    x: shooter.x,
+    y: shooter.y,    
+    size: 25,
+    value: 200
+    },
+]
+let stage = 0
+let score = 0
 function setup() {
-    //rectMode(CENTER);
-    createCanvas(400, 400);
+    createCanvas(1800, 875);
     background(100, 50, 120);
-    
-    /*fill("lightPink");
-    noStroke();
-    circle(100, 350, 50);
-    circle(300, 350, 50)
-    ellipse(200, 275, 225, 125)
-    ellipse(200, 300, 275, 75)
-    stroke("yellow");
-    strokeWeight(4);*/
-    
-    
 }    
 
 function draw() {
     background(100);
+    if (stage === 2) {
+        splash2();
+    }
+    if (stage === 1) {
+       game();
+    }
+    if (stage === 0) {
+        splash();
+    }
+    if (keyIsDown(ENTER)) {
+        stage = 1;
+    }   
+    if (score > 500) {
+        stage = 2;
+        score = 0;
+
+    }
+    
+}
+//Intro screen 
+function splash() {
+    fill(255);
+    textSize(15);
+    textAlign(TOP);
+    textFont("Courier New");
+    textWrap(WORD);
+    text("Colour Shooter", 10, 200, 400);
+    text("Shoot the different coloured balls worth different values, using the left and right arrow keys to move the shooter, and the up arrow to shoot the balls.", 10, 220, 400);
+    text("The game ends when you shoot the wrong colour, so be careful!", 10, 300, 400);
+    text("Press Enter to Start", 10, 350, 400);
+}
+//End screen when score < 200
+function splash2() {
+    fill(255);
+    textSize(15);
+    textAlign(TOP);
+    textFont("Courier New");    
+    text("You won! Press Enter to Play Again", 10, 200, 400);
+}
+function game() {
+    textSize(20);
+    textAlign(TOP);
+    textFont("Courier New");
+    text("Score: " + score, 10, 10);
+    
     fill(shooter.r, shooter.g, shooter.b);
     circle(shooter.x, shooter.y, shooter.size);
     
@@ -71,37 +122,43 @@ function draw() {
         fill(points[i].r, points[i].g, points[i].b); 
         circle(points[i].x, points[i].y, points[i].size); 
           
-    //console.log(circles[i].x); This causes lag! 
     }
-    
+}
+function checkCollision(bullet, target) {
+    let distance = Math.sqrt((bullet.x - target.x) ** 2 + (bullet.y - target.y) ** 2);
+    return distance < (bullet.size / 2 + target.size / 2);
 }
 function updateShooter(weapon) {
-    if(keyIsDown(RIGHT_ARROW)){
-        if (weapon.x < 400 - weapon.size/2){
-        weapon.x+=4; 
+    if(keyIsDown(68)){
+        if (weapon.x < 1800 - weapon.size/2){
+        weapon.x+=10; 
         }
     }
-    if(keyIsDown(LEFT_ARROW)){
+    if(keyIsDown(65)){
         if (weapon.x > 0 + weapon.size/2){
-        weapon.x-=4;
+        weapon.x-=10;
         }
     }
-}    //console.log(mouseX);
-    //circle(mouseX, mouseY, 100);
-     
-    /*circle(x, y, 50);
-    
-    if(keyIsDown(UP_ARROW)){
-        y-=4;
+    for (let i = 0; i<bullets.length; i++) {
+        circle(bullets[i].x, bullets[i].y, bullets[i].size);
+        bullets[i].y-=10;
+        for (let j = 0; j<points.length; j++) {
+
+        if (checkCollision(bullets[i], points[j])) {
+            score+=points[j].value;
+            bullets.splice(i, 1);
+            points.splice(j,1);
+            createPoints();
+            break;
+        } 
     }
-    if(keyIsDown(DOWN_ARROW)){
-        y+=4;
-    }*/
+    }
+}  
 
 function updateCircle(circ) {
     
-    circ.x = random(0, 400);
-    circ.y = random(0, 200);
+    circ.x = random(0, 1800);
+    circ.y = random(50, 700);
     
 
 }
@@ -112,50 +169,38 @@ function randomBalls(targets) {
         
     }
 }
-    /*
-    circ.x += circ.velX
-    if (circ.x  >400 - circ.size/2|| circ.x <0 +circ.size/2){
-        circ.velX *= -1;
+function keyPressed() {
+    if (keyCode === 87) {
+        let bullet = {
+            x: shooter.x,
+            y: shooter.y,
+            size: 10, // Set a fixed size for the bullet
+        };
+        bullets.push(bullet);
     }
-    circ.y += circ.velY
-    if (circ.y  > 400 - circ.size/2|| circ.y <0 +circ.size/2){
-        circ.velY *= -1; 
+}
+function createPoints() {
+    let randomX = random(0, 1800);
+    let randomY = random(50, 700);
+    let randomSize = random(10, 100);   
+    let randomR = random(80, 220);
+    let randomG = random(0, 150);
+    let randomB = random(150, 255);   
+    let randomValue = floor(random(1, 200));
+    let newPoint = {
+        x: randomX,
+        y: randomY,
+        size: randomSize,
+        r: randomR, 
+        g: randomG,
+        b: randomB,
+        value: randomValue
+    };
+    points.push(newPoint);
     }
+
+
+        
+
     
 
-}*/
-function keyPressed() {
-    if (key=="ArrowRight"){
-        x++;
-    }else if (key == "ArrowLeft") {
-        x--;
-    }
-}
-/*function mouseClicked() {
-    let randomSize = random(25, 100);
-    let randomVelX = random(-4, 5);
-    let randomVelY = random(-4, 5);
-    let randomR = random(0, 255);
-    let randomG = random(0, 255);
-    let randomB = random(0, 255);
-    let newCircle = {
-        x:mouseX,
-        y:mouseY,
-        size: randomSize,
-        velX: randomVelX,
-        velY: randomVelY,
-        r: randomR,
-        g: randomG,
-        b: randomB
-
-
-    } 
-        //this function is going to be important: i need it to work with another method besides mouseClicked
-
-    circles.push(newCircle);
-}
-    /*let r = random(0, 255);
-    let g = random(0, 255);
-    let b = random(0,255);
-    fill(r, g, b);
-    circle(mouseX, mouseY, randomSize);*/
