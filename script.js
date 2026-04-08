@@ -36,12 +36,15 @@ let enemies = [
     x: 500,
     y: 500,
     size: 50,       
-    velocity: 5
+    velocity: 5,
+    value: -200
     },
     {
     x: 1000,
     y: 500,
     size: 50,
+    velocity: 6, 
+    value: -150
     }
 ]
 let shooter = 
@@ -65,9 +68,7 @@ let score = 0
 function preload() {
     shooter.image = loadImage('./painter.png');
     enemies.image = loadImage('./enemy.png');
-    for (let i = 0; i < enemies.length; i++) {
-        enemies[i].image = enemies.image; 
-    }
+    
 }
 function setup() {
     createCanvas(1800, 875);
@@ -85,13 +86,7 @@ function draw() {
     }
     if (stage === 1) {
        game();
-       if (frameCount % 240 === 0) {
-        updateEnemy(enemies[0]);
-    }
-    for (let i = 0; i<enemies.length; i++) {
-    image(enemies[i].image, enemies[i].x, enemies[i].y);
-    
-    }
+       
     }
     if (stage === 0) {
         splash();
@@ -129,6 +124,7 @@ function splash2() {
     textAlign(LEFT, TOP);
     textFont("Courier New");    
     text("You won! Press Enter to Play Again", 10, 200, 400);
+    text("Press Shift to play the next stage", 10, 220, 400);
 }
 
 
@@ -152,10 +148,13 @@ function game() {
         circle(points[i].x, points[i].y, points[i].size); 
           
     }
-    image(shooter.image, shooter.x, shooter.y, shooter.size, shooter.size);
+    image(shooter.image, shooter.x, shooter.y);
+    enemyCreation();   
 }
 
+function game2() {
 
+}
 
 
 function checkCollision(bullet, target) {
@@ -175,22 +174,29 @@ function updateShooter(weapon) {
         weapon.x-=10;
         }
     }
+    collisionOutcome(points);
+    }
+function collisionOutcome(victim) {
     for (let i = 0; i<bullets.length; i++) {
         circle(bullets[i].x, bullets[i].y, bullets[i].size);
         bullets[i].y-=10;
-        for (let j = 0; j<points.length; j++) {
+        for (let j = 0; j<victim.length; j++) {
 
-        if (checkCollision(bullets[i], points[j])) {
-            score+=points[j].value;
+        if (checkCollision(bullets[i], victim[j])) {
+            score+=victim[j].value;
             bullets.splice(i, 1);
-            points.splice(j,1);
+            victim.splice(j,1);
+            if (victim === points){
             createPoints();
+            }
+            if (victim === enemies) {
+                createEnemies();
+            }
             break;
         } 
     }
     }
-}  
-
+}
 function updateCircle(circ) {
     
     circ.x = random(0, 1800);
@@ -237,10 +243,41 @@ function createPoints() {
     };
     points.push(newPoint);
     }
-
+function createEnemies() {
+    let newEnemy = {
+        x: random(0, 1800),
+        y: random(50, 700),
+        size: 50,
+        velocity: random(3, 7),
+        value: floor(random(-200, -50))
+    };
+    enemies.push(newEnemy);
+}
 function updateEnemy(enemy) {
     enemy.x = random(0, 1800);
     enemy.y = random(50, 700);
+    
+}
+function enemyCreation() {
+    for (let i = 0; i < enemies.length; i++) {
+        enemies[i].image = enemies.image; 
+    }
+       for (let i = 0; i<enemies.length; i++) {
+       if (frameCount % 240 === 0) {
+        updateEnemy(enemies[i]);
+       }
+    }
+    for (let i = 0; i<enemies.length; i++) {
+    image(enemies[i].image, enemies[i].x, enemies[i].y);
+    
+    }
+    collisionOutcome(enemies);
+}
+function enemyMovement(enemy) {
+    enemy.x += enemy.velocity;
+    if (enemy.x > 1800 + enemy.size/2) {
+        enemy.x = 0 - enemy.size/2;
+    }
 }
         
 
