@@ -64,7 +64,7 @@ let bullets = [
 ]
 let stage = 0
 let score = 0
-
+let backgroundImg;
 function preload() {
     shooter.image = loadImage('./painter.png');
     enemies.image = loadImage('./enemy.png');
@@ -126,6 +126,8 @@ function splash2() {
     text("You won! Press Enter to Play Again", 10, 200, 400);
     text("Press Shift to play the next stage", 10, 220, 400);
 }
+//Credits to Photo by <a href="https://unsplash.com/@zgc1993?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">冬城</a> on <a href="https://unsplash.com/photos/blue-white-orange-and-red-abstract-painting-m7Cb4AnzKPc?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+      
 
 
 function game() {
