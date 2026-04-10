@@ -68,7 +68,7 @@ let backgroundImg;
 function preload() {
     shooter.image = loadImage('./painter.png');
     enemies.image = loadImage('./enemy.png');
-    
+    backgroundImg = loadImage('./background.jpg');
 }
 function setup() {
     createCanvas(1800, 875);
@@ -78,6 +78,7 @@ function setup() {
 
 function draw() {
     background(100);
+    image(backgroundImg, width/2, height/2);
     if (stage === 3) {
         game2();
     }
@@ -135,7 +136,7 @@ function game() {
     textAlign(LEFT, TOP);
     textFont("Courier New");
     text("Score: " + score, 10, 10);
-    
+    strokeWeight(5);
     fill(shooter.r, shooter.g, shooter.b);
     circle(shooter.x, shooter.y, shooter.size);
     image(shooter.image, shooter.x, shooter.y);
@@ -276,6 +277,7 @@ function enemyCreation() {
     collisionOutcome(enemies);
 }
 function enemyMovement(enemy) {
+    enemies[0].x += enemies[0].velocity;
     enemy.x += enemy.velocity;
     if (enemy.x > 1800 + enemy.size/2) {
         enemy.x = 0 - enemy.size/2;
